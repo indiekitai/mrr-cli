@@ -52,4 +52,6 @@ func init() {
 	rootCmd.AddCommand(importCmd)
 	rootCmd.AddCommand(forecastCmd)
 	rootCmd.AddCommand(badgeCmd)
+	rootCmd.AddCommand(goalCmd)
+	rootCmd.AddCommand(serveCmd)
 }

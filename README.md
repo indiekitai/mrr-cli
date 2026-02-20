@@ -11,6 +11,8 @@ A terminal MRR (Monthly Recurring Revenue) tracker for indie hackers. Track your
 - 📈 **Growth rate calculation** vs previous month
 - 💵 **ARR & Valuation** estimates with configurable multiplier
 - 🔮 **Forecasting** - project future MRR and milestones
+- 🎯 **Goal tracking** - set targets and track progress with projections
+- 🌐 **Public dashboard** - beautiful web page for Open Startup style sharing
 - 📤 **CSV Import/Export** for data portability
 - 🤖 **Agent-friendly** JSON output for automation
 - 🏷️ **Status badges** for README files
@@ -189,6 +191,62 @@ Milestones:
   $10,000 MRR: ~13 months (Mar 2027)
   $50,000 MRR: ~25 months (Mar 2028)
 ```
+
+### Goal Tracking
+
+Set MRR goals and track your progress:
+
+```bash
+# Set a goal
+mrr goal set 10000                  # Set $10,000 MRR goal
+mrr goal set 10000 --by 2026-06     # With deadline
+
+# Check progress
+mrr goal status
+
+# Remove goal
+mrr goal clear
+```
+
+**Goal Status Output:**
+```
+🎯 Goal: $10,000 MRR by June 2026
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Current:  $1,234 (12.3%)
+████████░░░░░░░░░░░░░░░░░░░░░░░░░
+
+Progress: $1,234 / $10,000
+Remaining: $8,766
+Time left: 4 months
+
+📈 At current growth rate (15%/mo):
+   Projected to reach goal in: 3.2 months ✅
+   Expected date: May 2026
+```
+
+Goal configuration is stored in `~/.mrr-cli/config.json`.
+
+### Public Dashboard
+
+Serve a beautiful web dashboard for Open Startup style transparency:
+
+```bash
+# Start dashboard server
+mrr serve                   # Serve on port 8080
+mrr serve --port 3000       # Custom port
+mrr serve --public          # Public mode (hides entry details)
+```
+
+The dashboard shows:
+- **Current MRR** with big number display
+- **Growth rate** badge
+- **Last 6 months** trend chart
+- **Goal progress** bar (if goal is set)
+- **Recent entries** table (hidden in public mode)
+- **Last updated** timestamp
+
+Access the JSON API at `/api/data` for integrations.
 
 ### Generate Badge
 
@@ -373,6 +431,41 @@ mrr forecast --json
     {"target": 5000, "months": 8, "date": "2026-10"},
     {"target": 10000, "months": 13, "date": "2027-03"}
   ]
+}
+```
+
+**`mrr serve` API (`/api/data`)**
+```json
+{
+  "current_mrr": 1234.00,
+  "arr": 14808.00,
+  "growth_rate": 15.2,
+  "monthly_trend": [
+    {"month": "2025-09", "mrr": 800.00},
+    {"month": "2025-10", "mrr": 950.00},
+    {"month": "2025-11", "mrr": 1050.00},
+    {"month": "2025-12", "mrr": 1100.00},
+    {"month": "2026-01", "mrr": 1150.00},
+    {"month": "2026-02", "mrr": 1234.00}
+  ],
+  "goal": {
+    "amount": 10000.00,
+    "deadline": "2026-06",
+    "progress": 12.34
+  },
+  "is_public": false,
+  "last_updated": "2026-02-20T15:04:05Z"
+}
+```
+
+**`~/.mrr-cli/config.json` (goal storage)**
+```json
+{
+  "goal": {
+    "amount": 1000000,
+    "deadline": "2026-06",
+    "set_at": "2026-02-20"
+  }
 }
 ```
 
