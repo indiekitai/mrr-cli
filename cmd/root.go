@@ -22,6 +22,8 @@ Examples:
   mrr add 29.99 --source stripe
   mrr list --month 2024-01
   mrr report
+  mrr forecast
+  mrr export --json
   mrr tui`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		return db.Init()
@@ -46,4 +48,8 @@ func init() {
 	rootCmd.AddCommand(deleteCmd)
 	rootCmd.AddCommand(reportCmd)
 	rootCmd.AddCommand(tuiCmd)
+	rootCmd.AddCommand(exportCmd)
+	rootCmd.AddCommand(importCmd)
+	rootCmd.AddCommand(forecastCmd)
+	rootCmd.AddCommand(badgeCmd)
 }

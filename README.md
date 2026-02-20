@@ -9,6 +9,11 @@ A terminal MRR (Monthly Recurring Revenue) tracker for indie hackers. Track your
 - 📊 **Track MRR** from multiple sources (Stripe, Gumroad, Paddle, manual)
 - 💰 **Currency formatting** in USD (configurable)
 - 📈 **Growth rate calculation** vs previous month
+- 💵 **ARR & Valuation** estimates with configurable multiplier
+- 🔮 **Forecasting** - project future MRR and milestones
+- 📤 **CSV Import/Export** for data portability
+- 🤖 **Agent-friendly** JSON output for automation
+- 🏷️ **Status badges** for README files
 - 🎨 **Pretty colored output** with table formatting
 - 🖥️ **Interactive TUI** with vim-style keybindings
 - 🗄️ **SQLite storage** - single file at `~/.mrr-cli/data.db`
@@ -63,6 +68,9 @@ mrr list --month 2024-01
 # Filter by source or type
 mrr list --source stripe
 mrr list --type recurring
+
+# JSON output for automation
+mrr list --json
 ```
 
 ### Edit Entry
@@ -89,14 +97,110 @@ mrr report
 
 # Specific month
 mrr report --month 2024-01
+
+# Custom valuation multiplier (default 3x)
+mrr report --multiplier 5
+
+# JSON output for automation
+mrr report --json
+
+# Quiet mode - just the MRR number
+mrr report --quiet
 ```
 
 The report shows:
-- MRR (recurring revenue)
+- **MRR** (Monthly Recurring Revenue)
+- **ARR** (Annual Recurring Revenue = MRR × 12)
+- **Growth rate** vs previous month
+- **Valuation** estimate (ARR × multiplier)
 - One-time revenue
-- Total revenue
-- Growth rate vs previous month
 - Breakdown by source
+
+Example output:
+```
+Monthly Report: February 2026
+───────────────────────────────────
+
+MRR:        $1,234.00
+ARR:        $14,808.00
+Growth:     +15.2% vs last month
+Valuation:  $44,424.00 (at 3x ARR)
+
+By Source:
+    stripe:   $800.00  (64.8%)
+    gumroad:  $434.00  (35.2%)
+```
+
+### CSV Export
+
+```bash
+# Export all entries to stdout
+mrr export
+
+# Export specific month
+mrr export --month 2024-01
+
+# Export to file
+mrr export --output entries.csv
+
+# Export as JSON
+mrr export --json
+```
+
+CSV format:
+```csv
+date,amount,source,type,note
+2024-01-01,49.99,stripe,recurring,SaaS subscription
+2024-01-15,19.00,gumroad,one-time,ebook sale
+```
+
+### CSV Import
+
+```bash
+mrr import entries.csv
+```
+
+Import from a CSV file with the same format as export.
+
+### Forecast Future MRR
+
+```bash
+# Show projections and milestones
+mrr forecast
+
+# JSON output
+mrr forecast --json
+```
+
+Shows projected MRR for 3, 6, and 12 months based on current growth rate, plus estimated time to reach revenue milestones ($1k, $5k, $10k, $50k, $100k MRR).
+
+Example output:
+```
+MRR Forecast (based on 15.2% monthly growth)
+────────────────────────────────────────────
+
+Current:      $1,234.00
+In 3 months:  $1,890.00
+In 6 months:  $2,895.00
+In 12 months: $6,786.00
+
+Milestones:
+  $5,000 MRR: ~8 months (Oct 2026)
+  $10,000 MRR: ~13 months (Mar 2027)
+  $50,000 MRR: ~25 months (Mar 2028)
+```
+
+### Generate Badge
+
+```bash
+# Output SVG to stdout
+mrr badge
+
+# Save to file
+mrr badge --output mrr.svg
+```
+
+Generates a shields.io-style SVG badge showing current MRR. Perfect for README files!
 
 ### Interactive TUI
 
@@ -116,6 +220,27 @@ mrr tui
 | `d` | Delete selected entry |
 | `r` | Refresh |
 | `q` / `Esc` | Quit |
+
+## Agent-Friendly Output
+
+All listing and report commands support `--json` / `-j` for machine-readable output:
+
+```bash
+# Get MRR as a single number
+mrr report --quiet
+# Output: 1234.00
+
+# Full report as JSON
+mrr report --json
+
+# List entries as JSON
+mrr list --json
+
+# Export as JSON
+mrr export --json
+```
+
+This makes it easy to integrate with scripts, automation tools, or AI agents.
 
 ## Data Storage
 
@@ -163,6 +288,27 @@ mrr report --month 2024-02
 # One-time product sales
 mrr add 49 --source gumroad --type one-time --note "eBook sale"
 mrr add 149 --source gumroad --type one-time --note "Course bundle"
+```
+
+### Export and Backup
+
+```bash
+# Monthly export routine
+mrr export --month $(date +%Y-%m) --output ~/backup/mrr-$(date +%Y-%m).csv
+```
+
+### Automation Script
+
+```bash
+#!/bin/bash
+# Get current MRR for monitoring
+MRR=$(mrr report --quiet)
+echo "Current MRR: $MRR"
+
+# Check if milestone reached
+if (( $(echo "$MRR > 1000" | bc -l) )); then
+    echo "🎉 Milestone reached: $1000 MRR!"
+fi
 ```
 
 ## License
