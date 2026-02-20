@@ -311,6 +311,102 @@ if (( $(echo "$MRR > 1000" | bc -l) )); then
 fi
 ```
 
+## Agent/API Reference
+
+For AI agents and automation scripts, mrr-cli provides structured output formats.
+
+### JSON Output
+
+All data commands support `--json` flag:
+
+```bash
+mrr list --json
+mrr report --json
+mrr export --json
+mrr forecast --json
+```
+
+### JSON Schemas
+
+**`mrr list --json`**
+```json
+[
+  {
+    "id": 1,
+    "date": "2026-02-20",
+    "amount": 99.99,
+    "source": "stripe",
+    "type": "recurring",
+    "note": "Pro subscription"
+  }
+]
+```
+
+**`mrr report --json`**
+```json
+{
+  "month": "2026-02",
+  "mrr": 1234.00,
+  "arr": 14808.00,
+  "growth_rate": 15.2,
+  "valuation": 44424.00,
+  "multiplier": 3,
+  "one_time": 200.00,
+  "by_source": {
+    "stripe": 800.00,
+    "gumroad": 434.00
+  }
+}
+```
+
+**`mrr forecast --json`**
+```json
+{
+  "current_mrr": 1234.00,
+  "growth_rate": 15.2,
+  "projections": {
+    "3_months": 1890.00,
+    "6_months": 2895.00,
+    "12_months": 6786.00
+  },
+  "milestones": [
+    {"target": 5000, "months": 8, "date": "2026-10"},
+    {"target": 10000, "months": 13, "date": "2027-03"}
+  ]
+}
+```
+
+### Quiet Mode
+
+Get just the number for scripting:
+
+```bash
+mrr report --quiet
+# Output: 1234.00
+
+# Use in scripts
+MRR=$(mrr report --quiet)
+if [ "$MRR" -gt 1000 ]; then echo "Milestone!"; fi
+```
+
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | Error (invalid input, database error, etc.) |
+
+### Example: AI Agent Integration
+
+```bash
+# Get structured data for analysis
+DATA=$(mrr report --json)
+echo "$DATA" | jq '.mrr, .growth_rate'
+
+# Check health
+mrr report --quiet | xargs -I {} echo "MRR: ${}"
+```
+
 ## License
 
 MIT
