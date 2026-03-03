@@ -1,3 +1,5 @@
+[English](README.md) | [中文](README.zh-CN.md)
+
 # mrr-cli
 
 A terminal MRR (Monthly Recurring Revenue) tracker for indie hackers. Track your revenue from Stripe, Gumroad, Paddle, or manual entries — all from the command line.
